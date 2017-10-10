@@ -9,7 +9,7 @@ class ArgsParser(cmdName: String) extends AbstractOptParser[Args](cmdName) {
   head(s"""
           |$cmdName - Sync paired-end FASTQ files.
           |
-        |This tool works with gzipped or non-gzipped FASTQ files. The output
+          |This tool works with gzipped or non-gzipped FASTQ files. The output
           |file will be gzipped when the input is also gzipped.
       """.stripMargin)
 
