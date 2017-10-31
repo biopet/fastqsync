@@ -8,7 +8,7 @@ import nl.biopet.utils.tool.ToolCommand
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 
-object FastqSync extends ToolCommand {
+object FastqSync extends ToolCommand[Args] {
   def main(args: Array[String]): Unit = {
     val parser = new ArgsParser(toolName)
     val cmdArgs =

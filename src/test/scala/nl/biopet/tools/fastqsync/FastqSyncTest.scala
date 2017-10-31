@@ -3,14 +3,14 @@ package nl.biopet.tools.fastqsync
 import java.io.File
 
 import htsjdk.samtools.fastq.{AsyncFastqWriter, FastqReader, FastqRecord}
-import nl.biopet.test.BiopetTest
+import nl.biopet.utils.test.tools.ToolTest
 import org.mockito.Mockito.{when, inOrder => inOrd}
 import org.scalatest.mock.MockitoSugar
 import org.testng.annotations.{DataProvider, Test}
 
 import scala.collection.JavaConverters._
 
-class FastqSyncTest extends BiopetTest with MockitoSugar {
+class FastqSyncTest extends ToolTest[Args] with MockitoSugar {
   @Test
   def testNoArgs(): Unit = {
     intercept[IllegalArgumentException] {
