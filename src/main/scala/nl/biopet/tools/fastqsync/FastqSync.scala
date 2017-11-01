@@ -9,6 +9,8 @@ import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 
 object FastqSync extends ToolCommand[Args] {
+  def emptyArgs: Args = Args()
+  def argsParser = new ArgsParser(toolName)
   def main(args: Array[String]): Unit = {
     val parser = new ArgsParser(toolName)
     val cmdArgs =

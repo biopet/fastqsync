@@ -11,6 +11,7 @@ import org.testng.annotations.{DataProvider, Test}
 import scala.collection.JavaConverters._
 
 class FastqSyncTest extends ToolTest[Args] with MockitoSugar {
+  def toolCommand: FastqSync.type = FastqSync
   @Test
   def testNoArgs(): Unit = {
     intercept[IllegalArgumentException] {
