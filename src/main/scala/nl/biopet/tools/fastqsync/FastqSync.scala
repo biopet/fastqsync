@@ -2,7 +2,12 @@ package nl.biopet.tools.fastqsync
 
 import java.io.File
 
-import htsjdk.samtools.fastq.{AsyncFastqWriter, BasicFastqWriter, FastqReader, FastqRecord}
+import htsjdk.samtools.fastq.{
+  AsyncFastqWriter,
+  BasicFastqWriter,
+  FastqReader,
+  FastqRecord
+}
 import nl.biopet.utils.tool.ToolCommand
 
 import scala.annotation.tailrec
@@ -21,11 +26,14 @@ object FastqSync extends ToolCommand[Args] {
     val refReader = new FastqReader(cmdArgs.refFastq1)
     val AReader = new FastqReader(cmdArgs.inputFastq1)
     val BReader = new FastqReader(cmdArgs.inputFastq2)
-    val AWriter = new AsyncFastqWriter(new BasicFastqWriter(cmdArgs.outputFastq1), 3000)
-    val BWriter = new AsyncFastqWriter(new BasicFastqWriter(cmdArgs.outputFastq2), 3000)
+    val AWriter =
+      new AsyncFastqWriter(new BasicFastqWriter(cmdArgs.outputFastq1), 3000)
+    val BWriter =
+      new AsyncFastqWriter(new BasicFastqWriter(cmdArgs.outputFastq2), 3000)
 
     try {
-      val (numDiscA, numDiscB, numKept) = syncFastq(refReader, AReader, BReader, AWriter, BWriter)
+      val (numDiscA, numDiscB, numKept) =
+        syncFastq(refReader, AReader, BReader, AWriter, BWriter)
       println(s"Filtered $numDiscA reads from first read file.")
       println(s"Filtered $numDiscB reads from second read file.")
       println(s"Synced files contain $numKept reads.")
@@ -55,7 +63,8 @@ object FastqSync extends ToolCommand[Args] {
     refReader1.close()
     refReader2.close()
 
-    val genericName = new String(r1Name.zip(r2Name).takeWhile(x => x._1 == x._2).map(_._1).toArray)
+    val genericName = new String(
+      r1Name.zip(r2Name).takeWhile(x => x._1 == x._2).map(_._1).toArray)
 
     (r1Name.stripPrefix(genericName), r2Name.stripPrefix(genericName))
   }
@@ -102,49 +111,50 @@ object FastqSync extends ToolCommand[Args] {
     def syncIter(pre: Stream[FastqRecord],
                  seqA: Stream[FastqRecord],
                  seqB: Stream[FastqRecord]): Unit =
-    (pre.headOption, seqA.headOption, seqB.headOption) match {
-      // where the magic happens!
-      case (Some(r), Some(a), Some(b)) =>
-        val (nextA, nextB) = (a.fragId == r.fragId, b.fragId == r.fragId) match {
-          // all IDs are equal to ref
-          case (true, true) =>
-            numKept += 1
-            seqOutA.write(a)
-            seqOutB.write(b)
-            (seqA.tail, seqB.tail)
-          // B not equal to ref and A is equal, then we discard A and progress
-          case (true, false) =>
-            numDiscA += 1
-            (seqA.tail, seqB)
-          // A not equal to ref and B is equal, then we discard B and progress
-          case (false, true) =>
-            numDiscB += 1
-            (seqA, seqB.tail)
-          case (false, false) =>
-            (seqA, seqB)
-        }
-        syncIter(pre.tail, nextA, nextB)
-      // recursion base case: both iterators have been exhausted
-      case (_, None, None) => ;
-      // illegal state: reference sequence exhausted but not seqA or seqB
-      case (None, Some(_), _) | (None, _, Some(_)) =>
-        throw new NoSuchElementException("Reference record stream shorter than expected")
-      // keep recursion going if A still has items (we want to count how many)
-      case (_, _, None) =>
-        numDiscA += 1
-        syncIter(pre.tail, seqA.tail, seqB)
-      // like above but for B
-      case (_, None, _) =>
-        numDiscB += 1
-        syncIter(pre.tail, seqA, seqB.tail)
-    }
+      (pre.headOption, seqA.headOption, seqB.headOption) match {
+        // where the magic happens!
+        case (Some(r), Some(a), Some(b)) =>
+          val (nextA, nextB) =
+            (a.fragId == r.fragId, b.fragId == r.fragId) match {
+              // all IDs are equal to ref
+              case (true, true) =>
+                numKept += 1
+                seqOutA.write(a)
+                seqOutB.write(b)
+                (seqA.tail, seqB.tail)
+              // B not equal to ref and A is equal, then we discard A and progress
+              case (true, false) =>
+                numDiscA += 1
+                (seqA.tail, seqB)
+              // A not equal to ref and B is equal, then we discard B and progress
+              case (false, true) =>
+                numDiscB += 1
+                (seqA, seqB.tail)
+              case (false, false) =>
+                (seqA, seqB)
+            }
+          syncIter(pre.tail, nextA, nextB)
+        // recursion base case: both iterators have been exhausted
+        case (_, None, None) => ;
+        // illegal state: reference sequence exhausted but not seqA or seqB
+        case (None, Some(_), _) | (None, _, Some(_)) =>
+          throw new NoSuchElementException(
+            "Reference record stream shorter than expected")
+        // keep recursion going if A still has items (we want to count how many)
+        case (_, _, None) =>
+          numDiscA += 1
+          syncIter(pre.tail, seqA.tail, seqB)
+        // like above but for B
+        case (_, None, _) =>
+          numDiscB += 1
+          syncIter(pre.tail, seqA, seqB.tail)
+      }
 
     syncIter(pre.iterator.asScala.toStream,
-      seqA.iterator.asScala.toStream,
-      seqB.iterator.asScala.toStream)
+             seqA.iterator.asScala.toStream,
+             seqB.iterator.asScala.toStream)
 
     (numDiscA, numDiscB, numKept)
   }
-
 
 }
