@@ -4,7 +4,8 @@ import java.io.File
 
 import nl.biopet.utils.tool.AbstractOptParser
 
-class ArgsParser(cmdName: String) extends AbstractOptParser[Args](cmdName) {
+class ArgsParser(toolCommand: ToolCommand[Args])
+    extends AbstractOptParser[Args](toolCommand) {
 
   head(s"""
           |$cmdName - Sync paired-end FASTQ files.
