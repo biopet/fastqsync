@@ -31,29 +31,21 @@ class ArgsParser(toolCommand: ToolCommand[Args])
   opt[File]('r', "ref1") required () valueName "<fastq>" action {
     (x, c) =>
       c.copy(refFastq1 = x)
-  } validate { x =>
-    if (x.exists) success else failure("Reference FASTQ file not found")
   } text "Reference R1 FASTQ file"
 
   opt[File]("ref2") required () valueName "<fastq>" action {
     (x, c) =>
       c.copy(refFastq2 = x)
-  } validate { x =>
-    if (x.exists) success else failure("Reference FASTQ file not found")
   } text "Reference R2 FASTQ file"
 
   opt[File]('i', "in1") required () valueName "<fastq>" action {
     (x, c) =>
       c.copy(inputFastq1 = x)
-  } validate { x =>
-    if (x.exists) success else failure("Input FASTQ file 1 not found")
-  } text "Input FASTQ file 1"
+  }  text "Input FASTQ file 1"
 
   opt[File]('j', "in2") required () valueName "<fastq[.gz]>" action {
     (x, c) =>
       c.copy(inputFastq2 = x)
-  } validate { x =>
-    if (x.exists) success else failure("Input FASTQ file 2 not found")
   } text "Input FASTQ file 2"
 
   opt[File]('o', "out1") required () valueName "<fastq[.gz]>" action {

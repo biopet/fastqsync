@@ -40,6 +40,12 @@ object FastqSync extends ToolCommand[Args] {
   def main(args: Array[String]): Unit = {
     val cmdArgs = cmdArrayToArgs(args)
 
+    // Require input files to be present
+    require(cmdArgs.refFastq1.exists(),"Reference R1 FASTQ file not found")
+    require(cmdArgs.refFastq2.exists(),"Reference R2 FASTQ file not found")
+    require(cmdArgs.inputFastq1.exists(),"Input FASTQ file 1 not found")
+    require(cmdArgs.inputFastq2.exists(),"Input FASTQ file 2 not found")
+
     logger.info("Start")
 
     idSufixes = findR1R2Suffixes(cmdArgs.refFastq1, cmdArgs.refFastq2)
