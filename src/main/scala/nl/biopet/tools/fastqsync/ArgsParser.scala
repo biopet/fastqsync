@@ -28,24 +28,20 @@ import nl.biopet.utils.tool.{AbstractOptParser, ToolCommand}
 class ArgsParser(toolCommand: ToolCommand[Args])
     extends AbstractOptParser[Args](toolCommand) {
 
-  opt[File]('r', "ref1") required () valueName "<fastq>" action {
-    (x, c) =>
-      c.copy(refFastq1 = x)
+  opt[File]('r', "ref1") required () valueName "<fastq>" action { (x, c) =>
+    c.copy(refFastq1 = x)
   } text "Reference R1 FASTQ file"
 
-  opt[File]("ref2") required () valueName "<fastq>" action {
-    (x, c) =>
-      c.copy(refFastq2 = x)
+  opt[File]("ref2") required () valueName "<fastq>" action { (x, c) =>
+    c.copy(refFastq2 = x)
   } text "Reference R2 FASTQ file"
 
-  opt[File]('i', "in1") required () valueName "<fastq>" action {
-    (x, c) =>
-      c.copy(inputFastq1 = x)
-  }  text "Input FASTQ file 1"
+  opt[File]('i', "in1") required () valueName "<fastq>" action { (x, c) =>
+    c.copy(inputFastq1 = x)
+  } text "Input FASTQ file 1"
 
-  opt[File]('j', "in2") required () valueName "<fastq[.gz]>" action {
-    (x, c) =>
-      c.copy(inputFastq2 = x)
+  opt[File]('j', "in2") required () valueName "<fastq[.gz]>" action { (x, c) =>
+    c.copy(inputFastq2 = x)
   } text "Input FASTQ file 2"
 
   opt[File]('o', "out1") required () valueName "<fastq[.gz]>" action {
@@ -53,8 +49,7 @@ class ArgsParser(toolCommand: ToolCommand[Args])
       c.copy(outputFastq1 = x)
   } text "Output FASTQ file 1"
 
-  opt[File]('p', "out2") required () valueName "<fastq>" action {
-    (x, c) =>
-      c.copy(outputFastq2 = x)
+  opt[File]('p', "out2") required () valueName "<fastq>" action { (x, c) =>
+    c.copy(outputFastq2 = x)
   } text "Output FASTQ file 2"
 }

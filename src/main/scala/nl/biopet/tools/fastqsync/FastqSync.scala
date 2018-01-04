@@ -41,10 +41,10 @@ object FastqSync extends ToolCommand[Args] {
     val cmdArgs = cmdArrayToArgs(args)
 
     // Require input files to be present
-    require(cmdArgs.refFastq1.exists(),"Reference R1 FASTQ file not found")
-    require(cmdArgs.refFastq2.exists(),"Reference R2 FASTQ file not found")
-    require(cmdArgs.inputFastq1.exists(),"Input FASTQ file 1 not found")
-    require(cmdArgs.inputFastq2.exists(),"Input FASTQ file 2 not found")
+    require(cmdArgs.refFastq1.exists(), "Reference R1 FASTQ file not found")
+    require(cmdArgs.refFastq2.exists(), "Reference R2 FASTQ file not found")
+    require(cmdArgs.inputFastq1.exists(), "Input FASTQ file 1 not found")
+    require(cmdArgs.inputFastq2.exists(), "Input FASTQ file 2 not found")
 
     logger.info("Start")
 
@@ -185,12 +185,19 @@ object FastqSync extends ToolCommand[Args] {
   }
 
   def descriptionText: String =
-    """
+    s"""
       |Sync paired-end FASTQ files.
+      |Some QC tools are not aware of paired-end sequencing. These tools
+      |often delete one read of the read pair, while leaving the other. This will lead
+      |to the FASTQ files for the reads being out of sync.
+      |
+      |$toolName will check back with the original FASTQ files (before QC) and
+      |make sure that when a read is removed from one pair, the other read from
+      |the pair is also removed.
     """.stripMargin
   def manualText: String =
     """
-      |The tool requires two FASTQ files,two output FASTQ file and two reference FASTQ files.
+      |The tool requires two FASTQ files,two output FASTQ file and the original FASTQ files.
       |
       |This tool works with gzipped or non-gzipped FASTQ files.
       |The output file will be gzipped when the input is also gzipped.
@@ -200,17 +207,19 @@ object FastqSync extends ToolCommand[Args] {
     s"""
        |To sync two fastq files:
        |
-       |${example("--in1",
-                  "input1.fastq",
-                  "--in2",
-                  "input2.fastq",
-                  "--ref1",
-                  "ref1.fastq",
-                  "--ref2",
-                  "ref2.fastq",
-                  "--out1",
-                  "output1.fastq",
-                  "--out2",
-                  "output2.fastq")}
+       |${example(
+         "--in1",
+         "read1.fastq",
+         "--in2",
+         "read2.fastq",
+         "--ref1",
+         "beforeQC_read1.fastq",
+         "--ref2",
+         "beforeQC_read2.fastq",
+         "--out1",
+         "output1.fastq",
+         "--out2",
+         "output2.fastq"
+       )}
      """.stripMargin
 }
