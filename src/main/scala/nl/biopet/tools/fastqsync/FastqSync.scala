@@ -1,3 +1,24 @@
+/*
+ * Copyright (c) 2014 Sequencing Analysis Support Core - Leiden University Medical Center
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package nl.biopet.tools.fastqsync
 
 import java.io.File
@@ -15,9 +36,15 @@ import scala.collection.JavaConverters._
 
 object FastqSync extends ToolCommand[Args] {
   def emptyArgs: Args = Args()
-  def argsParser = new ArgsParser(toolName)
+  def argsParser = new ArgsParser(this)
   def main(args: Array[String]): Unit = {
     val cmdArgs = cmdArrayToArgs(args)
+
+    // Require input files to be present
+    require(cmdArgs.refFastq1.exists(), "Reference R1 FASTQ file not found")
+    require(cmdArgs.refFastq2.exists(), "Reference R2 FASTQ file not found")
+    require(cmdArgs.inputFastq1.exists(), "Input FASTQ file 1 not found")
+    require(cmdArgs.inputFastq2.exists(), "Input FASTQ file 2 not found")
 
     logger.info("Start")
 
@@ -157,4 +184,42 @@ object FastqSync extends ToolCommand[Args] {
     (numDiscA, numDiscB, numKept)
   }
 
+  def descriptionText: String =
+    s"""
+      |Sync paired-end FASTQ files.
+      |Some QC tools are not aware of paired-end sequencing. These tools
+      |often delete one read of the read pair, while leaving the other. This will lead
+      |to the FASTQ files for the reads being out of sync.
+      |
+      |$toolName will check back with the original FASTQ files (before QC) and
+      |make sure that when a read is removed from one pair, the other read from
+      |the pair is also removed.
+    """.stripMargin
+  def manualText: String =
+    """
+      |The tool requires two FASTQ files,two output FASTQ file and the original FASTQ files.
+      |
+      |This tool works with gzipped or non-gzipped FASTQ files.
+      |The output file will be gzipped when the input is also gzipped.
+    """.stripMargin
+
+  def exampleText: String =
+    s"""
+       |To sync two fastq files:
+       |
+       |${example(
+         "--in1",
+         "read1.fastq",
+         "--in2",
+         "read2.fastq",
+         "--ref1",
+         "beforeQC_read1.fastq",
+         "--ref2",
+         "beforeQC_read2.fastq",
+         "--out1",
+         "output1.fastq",
+         "--out2",
+         "output2.fastq"
+       )}
+     """.stripMargin
 }
