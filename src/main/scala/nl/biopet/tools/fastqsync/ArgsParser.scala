@@ -44,9 +44,8 @@ class ArgsParser(toolCommand: ToolCommand[Args])
     c.copy(inputFastq2 = x)
   } text "Input FASTQ file 2"
 
-  opt[File]('o', "out1") required () valueName "<fastq[.gz]>" action {
-    (x, c) =>
-      c.copy(outputFastq1 = x)
+  opt[File]('o', "out1") required () valueName "<fastq[.gz]>" action { (x, c) =>
+    c.copy(outputFastq1 = x)
   } text "Output FASTQ file 1"
 
   opt[File]('p', "out2") required () valueName "<fastq>" action { (x, c) =>

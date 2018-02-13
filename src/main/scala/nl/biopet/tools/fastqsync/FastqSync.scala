@@ -104,7 +104,7 @@ object FastqSync extends ToolCommand[Args] {
     lazy val fragId: String = fq.getReadName.split(" ").head match {
       case x if x.endsWith(idSufixes._1) => x.stripSuffix(idSufixes._1)
       case x if x.endsWith(idSufixes._2) => x.stripSuffix(idSufixes._2)
-      case x => x
+      case x                             => x
     }
   }
 
