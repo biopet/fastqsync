@@ -1,3 +1,24 @@
+/*
+ * Copyright (c) 2014 Biopet
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package nl.biopet.tools.fastqsync
 
 import java.io.File
@@ -30,10 +51,10 @@ class FastqSyncTest extends ToolTest[Args] with MockitoSugar {
   def mockProvider() =
     Array(
       Array(mock[FastqReader],
-        mock[FastqReader],
-        mock[FastqReader],
-        mock[AsyncFastqWriter],
-        mock[AsyncFastqWriter])
+            mock[FastqReader],
+            mock[FastqReader],
+            mock[AsyncFastqWriter],
+            mock[AsyncFastqWriter])
     )
 
   @Test(dataProvider = "mockProvider")
@@ -50,7 +71,8 @@ class FastqSyncTest extends ToolTest[Args] with MockitoSugar {
     val obs = inOrd(aOutMock, bOutMock)
     val exp = recordsOver("1", "2", "3").asScala.toSeq
 
-    val (numDiscard1, numDiscard2, numKept) = FastqSync.syncFastq(refMock, aMock, bMock, aOutMock, bOutMock)
+    val (numDiscard1, numDiscard2, numKept) =
+      FastqSync.syncFastq(refMock, aMock, bMock, aOutMock, bOutMock)
 
     obs.verify(aOutMock).write(exp.head)
     obs.verify(bOutMock).write(exp.head)
@@ -80,7 +102,8 @@ class FastqSyncTest extends ToolTest[Args] with MockitoSugar {
     val thrown = intercept[NoSuchElementException] {
       FastqSync.syncFastq(refMock, aMock, bMock, aOutMock, bOutMock)
     }
-    thrown.getMessage should ===("Reference record stream shorter than expected")
+    thrown.getMessage should ===(
+      "Reference record stream shorter than expected")
   }
 
   @Test(dataProvider = "mockProvider")
@@ -95,7 +118,8 @@ class FastqSyncTest extends ToolTest[Args] with MockitoSugar {
     when(aMock.iterator) thenReturn recordsOver()
     when(bMock.iterator) thenReturn recordsOver("1", "2", "3")
 
-    val (numDiscard1, numDiscard2, numKept) = FastqSync.syncFastq(refMock, aMock, bMock, aOutMock, bOutMock)
+    val (numDiscard1, numDiscard2, numKept) =
+      FastqSync.syncFastq(refMock, aMock, bMock, aOutMock, bOutMock)
 
     numDiscard1 shouldBe 0
     numDiscard2 shouldBe 3
@@ -114,7 +138,8 @@ class FastqSyncTest extends ToolTest[Args] with MockitoSugar {
     when(aMock.iterator) thenReturn recordsOver("1", "2", "3")
     when(bMock.iterator) thenReturn recordsOver()
 
-    val (numDiscard1, numDiscard2, numKept) = FastqSync.syncFastq(refMock, aMock, bMock, aOutMock, bOutMock)
+    val (numDiscard1, numDiscard2, numKept) =
+      FastqSync.syncFastq(refMock, aMock, bMock, aOutMock, bOutMock)
 
     numDiscard1 shouldBe 3
     numDiscard2 shouldBe 0
@@ -135,7 +160,8 @@ class FastqSyncTest extends ToolTest[Args] with MockitoSugar {
     val obs = inOrd(aOutMock, bOutMock)
     val exp = recordsOver("1", "2", "3").asScala.toSeq
 
-    val (numDiscard1, numDiscard2, numKept) = FastqSync.syncFastq(refMock, aMock, bMock, aOutMock, bOutMock)
+    val (numDiscard1, numDiscard2, numKept) =
+      FastqSync.syncFastq(refMock, aMock, bMock, aOutMock, bOutMock)
 
     // exp(0) is discarded by syncFastq
     obs.verify(aOutMock).write(exp(1))
@@ -163,7 +189,8 @@ class FastqSyncTest extends ToolTest[Args] with MockitoSugar {
     val obs = inOrd(aOutMock, bOutMock)
     val exp = recordsOver("1", "2", "3").asScala.toSeq
 
-    val (numDiscard1, numDiscard2, numKept) = FastqSync.syncFastq(refMock, aMock, bMock, aOutMock, bOutMock)
+    val (numDiscard1, numDiscard2, numKept) =
+      FastqSync.syncFastq(refMock, aMock, bMock, aOutMock, bOutMock)
 
     // exp(1) is discarded by syncFastq
     obs.verify(aOutMock).write(exp.head)
@@ -191,7 +218,8 @@ class FastqSyncTest extends ToolTest[Args] with MockitoSugar {
     val obs = inOrd(aOutMock, bOutMock)
     val exp = recordsOver("1", "2", "3").asScala.toSeq
 
-    val (numDiscard1, numDiscard2, numKept) = FastqSync.syncFastq(refMock, aMock, bMock, aOutMock, bOutMock)
+    val (numDiscard1, numDiscard2, numKept) =
+      FastqSync.syncFastq(refMock, aMock, bMock, aOutMock, bOutMock)
 
     // exp(0) and exp(2) are discarded by syncFastq
     obs.verify(aOutMock).write(exp(1))
@@ -209,19 +237,25 @@ class FastqSyncTest extends ToolTest[Args] with MockitoSugar {
                     aOutMock: AsyncFastqWriter,
                     bOutMock: AsyncFastqWriter): Unit = {
 
-    when(refMock.iterator) thenReturn recordsOver("SOLEXA12_24:6:117:1388:2001/2",
+    when(refMock.iterator) thenReturn recordsOver(
+      "SOLEXA12_24:6:117:1388:2001/2",
       "SOLEXA12_24:6:96:470:1965/2",
       "SOLEXA12_24:6:35:1209:2037/2")
     when(aMock.iterator) thenReturn recordsOver("SOLEXA12_24:6:96:470:1965/1",
-      "SOLEXA12_24:6:35:1209:2037/1")
+                                                "SOLEXA12_24:6:35:1209:2037/1")
     when(bMock.iterator) thenReturn recordsOver("SOLEXA12_24:6:117:1388:2001/2",
-      "SOLEXA12_24:6:96:470:1965/2")
+                                                "SOLEXA12_24:6:96:470:1965/2")
     val obs = inOrd(aOutMock, bOutMock)
 
-    val (numDiscard1, numDiscard2, numKept) = FastqSync.syncFastq(refMock, aMock, bMock, aOutMock, bOutMock)
+    val (numDiscard1, numDiscard2, numKept) =
+      FastqSync.syncFastq(refMock, aMock, bMock, aOutMock, bOutMock)
 
-    obs.verify(aOutMock).write(new FastqRecord("SOLEXA12_24:6:96:470:1965/1", "A", "", "H"))
-    obs.verify(bOutMock).write(new FastqRecord("SOLEXA12_24:6:96:470:1965/2", "A", "", "H"))
+    obs
+      .verify(aOutMock)
+      .write(new FastqRecord("SOLEXA12_24:6:96:470:1965/1", "A", "", "H"))
+    obs
+      .verify(bOutMock)
+      .write(new FastqRecord("SOLEXA12_24:6:96:470:1965/2", "A", "", "H"))
 
     numDiscard1 shouldBe 1
     numDiscard2 shouldBe 1
@@ -241,7 +275,8 @@ class FastqSyncTest extends ToolTest[Args] with MockitoSugar {
     when(bMock.iterator) thenReturn recordsOver("1/2", "2/2")
     val obs = inOrd(aOutMock, bOutMock)
 
-    val (numDiscard1, numDiscard2, numKept) = FastqSync.syncFastq(refMock, aMock, bMock, aOutMock, bOutMock)
+    val (numDiscard1, numDiscard2, numKept) =
+      FastqSync.syncFastq(refMock, aMock, bMock, aOutMock, bOutMock)
 
     obs.verify(aOutMock).write(new FastqRecord("2/1", "A", "", "H"))
     obs.verify(bOutMock).write(new FastqRecord("2/2", "A", "", "H"))
@@ -264,7 +299,8 @@ class FastqSyncTest extends ToolTest[Args] with MockitoSugar {
     when(bMock.iterator) thenReturn recordsOver("1_2", "2_2")
     val obs = inOrd(aOutMock, bOutMock)
 
-    val (numDiscard1, numDiscard2, numKept) = FastqSync.syncFastq(refMock, aMock, bMock, aOutMock, bOutMock)
+    val (numDiscard1, numDiscard2, numKept) =
+      FastqSync.syncFastq(refMock, aMock, bMock, aOutMock, bOutMock)
 
     obs.verify(aOutMock).write(new FastqRecord("2_1", "A", "", "H"))
     obs.verify(bOutMock).write(new FastqRecord("2_2", "A", "", "H"))
@@ -282,12 +318,15 @@ class FastqSyncTest extends ToolTest[Args] with MockitoSugar {
                                       bOutMock: AsyncFastqWriter): Unit = {
     FastqSync.idSufixes = ("/1", "/2")
 
-    when(refMock.iterator) thenReturn recordsOver("1 desc1b", "2 desc2b", "3 desc3b")
+    when(refMock.iterator) thenReturn recordsOver("1 desc1b",
+                                                  "2 desc2b",
+                                                  "3 desc3b")
     when(aMock.iterator) thenReturn recordsOver("2 desc2a", "3 desc3a")
     when(bMock.iterator) thenReturn recordsOver("1 desc1b", "2 desc2b")
     val obs = inOrd(aOutMock, bOutMock)
 
-    val (numDiscard1, numDiscard2, numKept) = FastqSync.syncFastq(refMock, aMock, bMock, aOutMock, bOutMock)
+    val (numDiscard1, numDiscard2, numKept) =
+      FastqSync.syncFastq(refMock, aMock, bMock, aOutMock, bOutMock)
 
     obs.verify(aOutMock).write(new FastqRecord("2 desc2a", "A", "", "H"))
     obs.verify(bOutMock).write(new FastqRecord("2 desc2b", "A", "", "H"))
@@ -306,15 +345,16 @@ class FastqSyncTest extends ToolTest[Args] with MockitoSugar {
     FastqSync.idSufixes = ("/1", "/2")
 
     when(refMock.iterator) thenReturn recordsOver("1/2 yep",
-      "2/2 yep",
-      "3/2 yep",
-      "4/2 yep",
-      "5/2 yep")
+                                                  "2/2 yep",
+                                                  "3/2 yep",
+                                                  "4/2 yep",
+                                                  "5/2 yep")
     when(aMock.iterator) thenReturn recordsOver("1/1 yep", "2/1 yep", "4/1 yep")
     when(bMock.iterator) thenReturn recordsOver("1/2 yep", "3/2 yep", "4/2 yep")
     val obs = inOrd(aOutMock, bOutMock)
 
-    val (numDiscard1, numDiscard2, numKept) = FastqSync.syncFastq(refMock, aMock, bMock, aOutMock, bOutMock)
+    val (numDiscard1, numDiscard2, numKept) =
+      FastqSync.syncFastq(refMock, aMock, bMock, aOutMock, bOutMock)
 
     obs.verify(aOutMock).write(new FastqRecord("1/1 yep", "A", "", "H"))
     obs.verify(bOutMock).write(new FastqRecord("1/2 yep", "A", "", "H"))
